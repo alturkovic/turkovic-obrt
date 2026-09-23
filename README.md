@@ -23,26 +23,10 @@ cjenika u CSV obliku (sukladno Zakonu o obveznom isticanju sidrene cijene).
   ažurira manifest
 - `scripts/build_manifest.py` — skripta koju Action pokreće
 
-## Postavljanje
-
-1. Napravite novi GitHub repozitorij i pushajte ovaj sadržaj u granu `main`.
-2. U repozitoriju: **Settings → Pages → Build and deployment → Source:
-   Deploy from a branch**, grana `main`, folder `/ (root)`.
-3. **Settings → Actions → General → Workflow permissions**: postavite na
-   "Read and write permissions" (potrebno da Action može commitati
-   dnevni snapshot).
-4. Workflow se pokreće automatski svaki dan u 05:00 UTC (07:00 CEST /
-   06:00 CET, dakle prije 8h ujutro po hrvatskom vremenu, s rezervom).
-   Možete ga i ručno pokrenuti: **Actions → Dnevni cjenik snapshot →
-   Run workflow**.
-
-Ako u tabu **Actions** ne vidite "Dnevni cjenik snapshot" nego samo
-"pages build and deployment" — to znači da `.github/workflows/` folder
-još nije stvarno pushan u repozitorij. Provjerite da je taj folder (i
-skrivene datoteke unutra) doista commitan; GitHub katkad ne prikaže
-workflow dok barem jednom ne detektira `.yml` datoteku na `main` grani.
-
 ## Važna napomena o pouzdanosti rasporeda
+
+Workflow se pokreće automatski svaki dan u 05:00 UTC, dakle prije 8h ujutro
+po hrvatskom vremenu, s rezervom.
 
 GitHub Actions `schedule` (cron) **nije jamčeno točan do minute** — u
 razdobljima velikog opterećenja GitHuba pokretanje zna kasniti (rijetko i
