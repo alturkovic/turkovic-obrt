@@ -14,7 +14,8 @@
 <header>
 <nav class="nav wrap">
 <a class="brand" href="#"><span>TURKOVIĆ</span><small>OBRT ZA IZRADU SUVENIRA</small></a>
-<div class="links"><a href="#ponuda">Ponuda</a><a href="#cjenik">Cjenik</a><a href="#o-nama">O nama</a><a class="pill" href="#kontakt">Kontakt</a></div>
+<div class="links" id="nav-links"><a href="#ponuda">Ponuda</a><a href="#cjenik">Cjenik</a><a href="#o-nama">O nama</a><a class="pill" href="#kontakt">Kontakt</a></div>
+<button class="burger" id="burger-btn" aria-label="Otvori izbornik" aria-expanded="false"><span></span><span></span><span></span></button>
 </nav>
 </header>
 
@@ -73,18 +74,21 @@
 <div class="price-row"><span>Preklopni nož</span><strong>40,00 €</strong></div>
 <div class="price-row"><span>Futrola za sjekiricu</span><strong>10,00 €</strong></div>
 <div class="price-row"><span>Dizajn</span><strong>10,00 €</strong></div></div>
+<div class="csv-download"><a class="btn light disabled" id="csv-download-btn" href="#">Preuzmi cjenik (CSV) →</a></div>
 </div>
 </section>
 
-<section class="section archive" id="cjenik-arhiva">
+<section id="formiranje-cijene" class="section formation">
 <div class="wrap">
-<div class="heading"><div class="kicker">CJENIK U CSV OBLIKU</div><h2>Preuzmi cjenik</h2><p>Trenutni cjenik u CSV obliku, plus arhiva zadnjih 30 dana.</p></div>
-<div class="csv-download"><a class="btn dark" href="data/cjenik.csv" download>Preuzmi trenutni cjenik (CSV)</a></div>
-<div class="archive-table-wrap">
-<table class="archive-table" id="arhiva-tablica">
-<thead><tr><th>Datum</th><th>Preuzimanje</th></tr></thead>
-<tbody><tr><td colspan="2" class="archive-loading">Učitavanje arhive…</td></tr></tbody>
-</table>
+<div class="heading"><div class="kicker">KAKO SE FORMIRA CIJENA</div><h2>Primjer: personalizirana sjekirica</h2><p>Cijena se formira prema opsegu posla. Svaki dodatni korak obrade posebno se naplaćuje.</p></div>
+<div class="formation-grid">
+<div class="formation-photo"><img src="assets/axe.jpg" alt="Primjer personalizirane sjekirice"></div>
+<div class="formation-list">
+<div class="formation-row"><span>Bianco sjekirica</span><strong>10,00 €</strong></div>
+<div class="formation-row"><span>Obrada glave <small>poliranje + 4 gravure</small></span><strong>20,00 €</strong></div>
+<div class="formation-row"><span>Obrada drške <small>pirografija, 4 gravure, zaštita lanenim uljem, zaštitni lak</small></span><strong>20,00 €</strong></div>
+<div class="formation-row"><span>Dizajn <small>grafička obrada, ovisno o zahtjevnosti motiva</small></span><strong>10,00 – 25,00 €</strong></div>
+</div>
 </div>
 </div>
 </section>
@@ -117,12 +121,41 @@
     </div>
   </div>
 </section>
+
+<section class="section archive" id="cjenik-arhiva">
+<div class="wrap">
+<div class="heading small"><div class="kicker">ARHIVA CJENIKA</div><h2>Povijest zadnjih 30 dana</h2><p>Svaki dan spremamo novi CSV snapshot cjenika, iz zakonskih razloga, čak i kad nema promjena.</p></div>
+<div class="archive-table-wrap">
+<table class="archive-table" id="arhiva-tablica">
+<thead><tr><th>Datum</th><th>Preuzimanje</th></tr></thead>
+<tbody><tr><td colspan="2" class="archive-loading">Učitavanje arhive…</td></tr></tbody>
+</table>
+</div>
+</div>
+</section>
 </main>
 <footer><div class="wrap foot"><span>© 2026 Turković, obrt za izradu suvenira</span></div></footer>
 <script>
+var burger = document.getElementById('burger-btn');
+var navLinks = document.getElementById('nav-links');
+burger.addEventListener('click', function(){
+  var open = navLinks.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+navLinks.querySelectorAll('a').forEach(function(a){
+  a.addEventListener('click', function(){ navLinks.classList.remove('open'); burger.setAttribute('aria-expanded','false'); });
+});
+
 fetch('data/manifest.json').then(function(r){return r.json();}).then(function(list){
   var tbody = document.querySelector('#arhiva-tablica tbody');
+  var dl = document.getElementById('csv-download-btn');
   if(!list.length){ tbody.innerHTML = '<tr><td colspan="2" class="archive-loading">Arhiva još nema zapisa.</td></tr>'; return; }
+
+  var latest = list[0];
+  dl.href = 'data/' + latest.file;
+  dl.setAttribute('download', latest.file.split('/').pop());
+  dl.classList.remove('disabled');
+
   tbody.innerHTML = '';
   list.forEach(function(item){
     var tr = document.createElement('tr');
@@ -131,7 +164,7 @@ fetch('data/manifest.json').then(function(r){return r.json();}).then(function(li
     var tdLink = document.createElement('td');
     var a = document.createElement('a');
     a.href = 'data/' + item.file;
-    a.setAttribute('download', '');
+    a.setAttribute('download', item.file.split('/').pop());
     a.textContent = 'Preuzmi CSV';
     tdLink.appendChild(a);
     tr.appendChild(tdDate); tr.appendChild(tdLink);

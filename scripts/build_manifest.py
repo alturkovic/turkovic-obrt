@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 """Generira data/manifest.json iz sadržaja data/archive/ i briše zapise
-starije od 30 dana. Pokreće ga GitHub Action svaki dan."""
+starije od 30 dana. Pokreće ga GitHub Action svaki dan.
+
+Očekivano ime arhivske datoteke: poslovnica-savska1-1-01-{YYYYMMDDHHMMSS}.csv
+Prefiks (naziv poslovnice i broj) je fiksan, mijenja se samo timestamp.
+"""
 import os
+import re
 import json
 import datetime
 
-ARCHIVE_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "archive")
-MANIFEST_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "manifest.json")
+HERE = os.path.dirname(__file__)
+ARCHIVE_DIR = os.path.join(HERE, "..", "data", "archive")
+MANIFEST_PATH = os.path.join(HERE, "..", "data", "manifest.json")
 KEEP_DAYS = 30
+
+FILENAME_RE = re.compile(r"^poslovnica-savska1-1-01-(\d{14})\.csv$")
 
 
 def main():
@@ -16,23 +24,27 @@ def main():
 
     entries = []
     for fname in os.listdir(ARCHIVE_DIR):
-        if not fname.endswith(".csv"):
+        m = FILENAME_RE.match(fname)
+        if not m:
             continue
-        date_str = fname[:-4]
+        ts = m.group(1)
         try:
-            file_date = datetime.date.fromisoformat(date_str)
+            dt = datetime.datetime.strptime(ts, "%Y%m%d%H%M%S")
         except ValueError:
             continue
 
-        if file_date < cutoff:
+        if dt.date() < cutoff:
             os.remove(os.path.join(ARCHIVE_DIR, fname))
             print(f"Obrisano (starije od {KEEP_DAYS} dana): {fname}")
             continue
 
-        entries.append(date_str)
+        entries.append((dt, fname))
 
-    entries.sort(reverse=True)
-    manifest = [{"date": d, "file": f"archive/{d}.csv"} for d in entries]
+    entries.sort(key=lambda e: e[0], reverse=True)
+    manifest = [
+        {"date": dt.date().isoformat(), "timestamp": dt.strftime("%Y-%m-%d %H:%M UTC"), "file": "archive/" + fname}
+        for dt, fname in entries
+    ]
 
     with open(MANIFEST_PATH, "w", encoding="utf-8") as f:
         json.dump(manifest, f, ensure_ascii=False, indent=2)

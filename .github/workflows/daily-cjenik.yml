@@ -1,0 +1,55 @@
+name: Dnevni cjenik snapshot
+
+# Ovaj workflow svaki dan (i bez ikakvih promjena cijena) sprema novi
+# CSV snapshot trenutnog cjenika u data/archive/, briše zapise starije
+# od 30 dana i ažurira data/manifest.json koji stranica čita.
+#
+# Ime datoteke prati fiksni obrazac: poslovnica-savska1-1-01-{timestamp}.csv
+# Mijenja se samo timestamp, prefiks (naziv poslovnice i broj) ostaje isti.
+#
+# NAPOMENA O VREMENU: GitHub Actions cron radi u UTC vremenu i NIJE
+# garantiran do minute točan — u razdobljima velikog opterećenja GitHuba
+# pokretanje može kasniti nekoliko (rijetko i desetak) minuta. Cron ispod
+# je postavljen na 05:00 UTC, što je 07:00 po srednjoeuropskom ljetnom
+# vremenu (CEST) i 06:00 po srednjoeuropskom vremenu (CET) — dakle sa
+# sigurnosnom rezervom prije 08:00 u oba godišnja doba. Ako trebate
+# apsolutnu garanciju paljenja u točno zadano vrijeme, GitHub Actions
+# cron sam po sebi to ne jamči.
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preuzmi repozitorij
+        uses: actions/checkout@v4
+
+      - name: Kreiraj dnevni snapshot cjenika
+        run: |
+          TS=$(date -u +%Y%m%d%H%M%S)
+          mkdir -p data/archive
+          FNAME="data/archive/poslovnica-savska1-1-01-${TS}.csv"
+          cp data/izvor-cijena.csv "$FNAME"
+          echo "Snapshot spremljen: $FNAME"
+
+      - name: Ažuriraj manifest i obriši stare zapise (30 dana)
+        run: python3 scripts/build_manifest.py
+
+      - name: Commitaj i pushaj promjene
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/archive data/manifest.json
+          if git diff --cached --quiet; then
+            echo "Nema promjena za commit."
+          else
+            git commit -m "Dnevni cjenik snapshot $(date -u +%F)"
+            git push
+          fi
