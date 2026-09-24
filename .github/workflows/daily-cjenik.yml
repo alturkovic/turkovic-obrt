@@ -7,18 +7,19 @@ name: Dnevni cjenik snapshot
 # Ime datoteke prati fiksni obrazac: poslovnica-savska1-1-01-{timestamp}.csv
 # Mijenja se samo timestamp, prefiks (naziv poslovnice i broj) ostaje isti.
 #
-# NAPOMENA O VREMENU: GitHub Actions cron radi u UTC vremenu i NIJE
-# garantiran do minute točan — u razdobljima velikog opterećenja GitHuba
-# pokretanje može kasniti nekoliko (rijetko i desetak) minuta. Cron ispod
-# je postavljen na 05:00 UTC, što je 07:00 po srednjoeuropskom ljetnom
-# vremenu (CEST) i 06:00 po srednjoeuropskom vremenu (CET) — dakle sa
-# sigurnosnom rezervom prije 08:00 u oba godišnja doba. Ako trebate
-# apsolutnu garanciju paljenja u točno zadano vrijeme, GitHub Actions
-# cron sam po sebi to ne jamči.
+# ZAŠTO 00:15 UTC (ubrzo iza ponoći), a ne "oko 8"?
+# Nema razloga gađati blizu roka. Pokretanjem odmah iza ponoći (00:15 UTC =
+# 02:15 CEST ljeti / 01:15 CET zimi) dobivamo ~6-7 sati sigurnosne rezerve
+# prije 08:00 po hrvatskom vremenu, umjesto da se oslanjamo na to da
+# GitHub Actions cron opali točno na vrijeme.
+#
+# NAPOMENA O POUZDANOSTI: GitHub Actions `schedule` NIJE jamčeno točan do
+# minute — u praksi zna kasniti i po nekoliko sati, pogotovo na javnim/
+# besplatnim repozitorijima gdje scheduled jobovi imaju niži prioritet.
 
 on:
   schedule:
-    - cron: "0 5 * * *"
+    - cron: "15 0 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -31,13 +32,18 @@ jobs:
       - name: Preuzmi repozitorij
         uses: actions/checkout@v4
 
-      - name: Kreiraj dnevni snapshot cjenika
+      - name: Kreiraj dnevni snapshot cjenika (preskoči ako već postoji za danas)
         run: |
-          TS=$(date -u +%Y%m%d%H%M%S)
+          TODAY=$(date -u +%Y%m%d)
           mkdir -p data/archive
-          FNAME="data/archive/poslovnica-savska1-1-01-${TS}.csv"
-          cp data/izvor-cijena.csv "$FNAME"
-          echo "Snapshot spremljen: $FNAME"
+          if ls data/archive/poslovnica-savska1-1-01-${TODAY}*.csv 1> /dev/null 2>&1; then
+            echo "Snapshot za danas ($TODAY) već postoji, preskačem stvaranje novog."
+          else
+            TS=$(date -u +%Y%m%d%H%M%S)
+            FNAME="data/archive/poslovnica-savska1-1-01-${TS}.csv"
+            cp data/izvor-cijena.csv "$FNAME"
+            echo "Snapshot spremljen: $FNAME"
+          fi
 
       - name: Ažuriraj manifest i obriši stare zapise (30 dana)
         run: python3 scripts/build_manifest.py
