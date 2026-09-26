@@ -7,9 +7,9 @@ name: Dnevni cjenik snapshot
 # Ime datoteke prati fiksni obrazac: poslovnica-savska1-1-01-{timestamp}.csv
 # Mijenja se samo timestamp, prefiks (naziv poslovnice i broj) ostaje isti.
 #
-# ZAŠTO 00:23 UTC (ubrzo iza ponoći), a ne "oko 8"?
-# Nema razloga gađati blizu roka. Pokretanjem odmah iza ponoći (00:23 UTC =
-# 02:23 CEST ljeti / 01:23 CET zimi) dobivamo ~6-7 sati sigurnosne rezerve
+# ZAŠTO 00:07 UTC (ubrzo iza ponoći), a ne "oko 8"?
+# Nema razloga gađati blizu roka. Pokretanjem odmah iza ponoći (00:07 UTC =
+# 02:07 CEST ljeti / 01:07 CET zimi) dobivamo ~6-7 sati sigurnosne rezerve
 # prije 08:00 po hrvatskom vremenu, umjesto da se oslanjamo na to da
 # GitHub Actions cron opali točno na vrijeme. Biramo ne-standardno vrijeme
 # da ne "upadnemo" u često korišteno vrijeme i padnemo u red čekanja.
@@ -20,7 +20,7 @@ name: Dnevni cjenik snapshot
 
 on:
   schedule:
-    - cron: "23 0 * * *"
+    - cron: "07 0 * * *"
   workflow_dispatch: {}
 
 permissions:
