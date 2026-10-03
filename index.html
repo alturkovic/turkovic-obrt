@@ -75,7 +75,7 @@
 <div class="price-row"><span>Preklopni nož</span><strong>40,00 €</strong><strong>40,00 €</strong></div>
 <div class="price-row"><span>Futrola za sjekiricu</span><strong>10,00 €</strong><strong>10,00 €</strong></div>
 <div class="price-row"><span>Dizajn</span><strong>–</strong><strong>10,00 €</strong></div></div>
-<div class="csv-download"><a class="btn light disabled" id="csv-download-btn" href="#">Preuzmi cjenik (CSV) →</a></div>
+<div class="csv-download"><a class="btn light disabled" id="csv-download-btn" href="#">Preuzmi cjenik (CSV) →</a><a class="archive-link" href="arhiva.html">Arhiva cjenika (zadnjih 30 dana) →</a></div>
 </div>
 </section>
 
@@ -123,17 +123,6 @@
   </div>
 </section>
 
-<section class="section archive" id="cjenik-arhiva">
-<div class="wrap">
-<div class="heading small"><div class="kicker">ARHIVA CJENIKA</div><h2>Povijest zadnjih 30 dana</h2><p>Svaki dan spremamo novi CSV snapshot cjenika, iz zakonskih razloga, čak i kad nema promjena.</p></div>
-<div class="archive-table-wrap">
-<table class="archive-table" id="arhiva-tablica">
-<thead><tr><th>Datum</th><th>Preuzimanje</th></tr></thead>
-<tbody><tr><td colspan="2" class="archive-loading">Učitavanje arhive…</td></tr></tbody>
-</table>
-</div>
-</div>
-</section>
 </main>
 <footer><div class="wrap foot"><span>© 2026 Turković, obrt za izradu suvenira</span></div></footer>
 <script>
@@ -148,31 +137,12 @@ navLinks.querySelectorAll('a').forEach(function(a){
 });
 
 fetch('data/manifest.json').then(function(r){return r.json();}).then(function(list){
-  var tbody = document.querySelector('#arhiva-tablica tbody');
+  if(!list.length){ return; }
   var dl = document.getElementById('csv-download-btn');
-  if(!list.length){ tbody.innerHTML = '<tr><td colspan="2" class="archive-loading">Arhiva još nema zapisa.</td></tr>'; return; }
-
   var latest = list[0];
   dl.href = 'data/' + latest.file;
   dl.setAttribute('download', latest.file.split('/').pop());
   dl.classList.remove('disabled');
-
-  tbody.innerHTML = '';
-  list.forEach(function(item){
-    var tr = document.createElement('tr');
-    var tdDate = document.createElement('td');
-    tdDate.textContent = item.date;
-    var tdLink = document.createElement('td');
-    var a = document.createElement('a');
-    a.href = 'data/' + item.file;
-    a.setAttribute('download', item.file.split('/').pop());
-    a.textContent = 'Preuzmi CSV';
-    tdLink.appendChild(a);
-    tr.appendChild(tdDate); tr.appendChild(tdLink);
-    tbody.appendChild(tr);
-  });
-}).catch(function(){
-  document.querySelector('#arhiva-tablica tbody').innerHTML = '<tr><td colspan="2" class="archive-loading">Arhiva trenutno nije dostupna.</td></tr>';
-});
+}).catch(function(){});
 </script>
 </body></html>

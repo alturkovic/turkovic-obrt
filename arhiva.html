@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Arhiva cjenika obrta Turković — povijest zadnjih 30 dana.">
+<title>Arhiva cjenika — Turković</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<nav class="nav wrap">
+<a class="brand" href="index.html"><span>TURKOVIĆ</span><small>OBRT ZA IZRADU SUVENIRA</small></a>
+<div class="links" id="nav-links"><a href="index.html#ponuda">Ponuda</a><a href="index.html#cjenik">Cjenik</a><a href="index.html#o-nama">O nama</a><a class="pill" href="index.html#kontakt">Kontakt</a></div>
+<button class="burger" id="burger-btn" aria-label="Otvori izbornik" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+</header>
+
+<main>
+<section class="section archive" id="cjenik-arhiva">
+<div class="wrap">
+<div class="heading"><div class="kicker">ARHIVA CJENIKA</div><h2>Povijest zadnjih 30 dana</h2><p>Svaki dan spremamo novi CSV snapshot cjenika, iz zakonskih razloga, čak i kad nema promjena. <a href="index.html#cjenik">← natrag na cjenik</a></p></div>
+<div class="archive-table-wrap archive-table-wrap-full">
+<table class="archive-table" id="arhiva-tablica">
+<thead><tr><th>Datum</th><th>Preuzimanje</th></tr></thead>
+<tbody><tr><td colspan="2" class="archive-loading">Učitavanje arhive…</td></tr></tbody>
+</table>
+</div>
+</div>
+</section>
+</main>
+<footer><div class="wrap foot"><span>© 2026 Turković, obrt za izradu suvenira</span></div></footer>
+<script>
+var burger = document.getElementById('burger-btn');
+var navLinks = document.getElementById('nav-links');
+burger.addEventListener('click', function(){
+  var open = navLinks.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+
+fetch('data/manifest.json').then(function(r){return r.json();}).then(function(list){
+  var tbody = document.querySelector('#arhiva-tablica tbody');
+  if(!list.length){ tbody.innerHTML = '<tr><td colspan="2" class="archive-loading">Arhiva još nema zapisa.</td></tr>'; return; }
+  tbody.innerHTML = '';
+  list.forEach(function(item){
+    var tr = document.createElement('tr');
+    var tdDate = document.createElement('td');
+    tdDate.textContent = item.date;
+    var tdLink = document.createElement('td');
+    var a = document.createElement('a');
+    a.href = 'data/' + item.file;
+    a.setAttribute('download', item.file.split('/').pop());
+    a.textContent = 'Preuzmi CSV';
+    tdLink.appendChild(a);
+    tr.appendChild(tdDate); tr.appendChild(tdLink);
+    tbody.appendChild(tr);
+  });
+}).catch(function(){
+  document.querySelector('#arhiva-tablica tbody').innerHTML = '<tr><td colspan="2" class="archive-loading">Arhiva trenutno nije dostupna.</td></tr>';
+});
+</script>
+</body></html>
