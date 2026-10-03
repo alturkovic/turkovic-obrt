@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Zaštita privatnosti, čuvanje osobnih podataka i sigurnosne mjere obrta Turković.">
+<title>Zaštita privatnosti — Turković</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<nav class="nav wrap">
+<a class="brand" href="index.html"><span>TURKOVIĆ</span><small>OBRT ZA IZRADU SUVENIRA</small></a>
+<div class="links" id="nav-links"><a href="index.html#ponuda">Ponuda</a><a href="index.html#cjenik">Cjenik</a><a href="index.html#o-nama">O nama</a><a class="pill" href="index.html#kontakt">Kontakt</a></div>
+<button class="burger" id="burger-btn" aria-label="Otvori izbornik" aria-expanded="false"><span></span><span></span><span></span></button>
+</nav>
+</header>
+
+<main>
+<section class="section archive" id="privatnost">
+<div class="wrap">
+<div class="heading"><div class="kicker">PRIVATNOST</div><h2>Zaštita osobnih podataka</h2><p>Kako postupamo s podacima koje nam ostavite prilikom narudžbe, i koje mjere opreza primjenjujemo. <a href="index.html">← natrag na početnu</a></p></div>
+
+<div class="policy-block">
+<h3>Čuvanje osobnih podataka</h3>
+<p>Osobne podatke koje nam ostavite prilikom narudžbe (ime, kontakt podaci, adresa dostave) koristimo isključivo u svrhu izrade i isporuke naručenog proizvoda. Podatke čuvamo do uspješne isporuke narudžbe, nakon čega se brišu.</p>
+</div>
+
+<div class="policy-block">
+<h3>Sigurnosne mjere</h3>
+<p>Narudžbe oštrih predmeta (noževi, sjekirice i slično) od strane maloljetnih osoba neće biti prihvaćene.</p>
+<p>Namjena svih proizvoda je ukrasna. Svaka druga uporaba proizvoda je na osobnu odgovornost kupca.</p>
+</div>
+</div>
+</section>
+</main>
+<footer><div class="wrap foot"><span>© 2026 Turković, obrt za izradu suvenira</span><a href="index.html">Natrag na početnu</a></div></footer>
+<script>
+var burger = document.getElementById('burger-btn');
+var navLinks = document.getElementById('nav-links');
+burger.addEventListener('click', function(){
+  var open = navLinks.classList.toggle('open');
+  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+</script>
+</body></html>
