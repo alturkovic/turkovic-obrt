@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-09",
+    "timestamp": "2026-10-09 05:45 UTC",
+    "file": "archive/poslovnica-savska1-1-01-20261009054528.csv"
+  },
+  {
     "date": "2026-10-08",
     "timestamp": "2026-10-08 05:40 UTC",
     "file": "archive/poslovnica-savska1-1-01-20261008054054.csv"
@@ -143,10 +148,5 @@
     "date": "2026-09-10",
     "timestamp": "2026-09-10 05:00 UTC",
     "file": "archive/poslovnica-savska1-1-01-20260910050000.csv"
-  },
-  {
-    "date": "2026-09-09",
-    "timestamp": "2026-09-09 05:00 UTC",
-    "file": "archive/poslovnica-savska1-1-01-20260909050000.csv"
   }
 ]
